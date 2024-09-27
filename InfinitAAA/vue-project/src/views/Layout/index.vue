@@ -29,18 +29,18 @@ import LayoutFooter from './components/LayoutFooter.vue'
     }
     
     .custom-message-box {
-  p {
-    color: black;
-    /* 修改为你想要的字体颜色 */
+  // p {
+  //   color: black;
+  //   /* 修改为你想要的字体颜色 */
 
-  }
+  // }
 }
 
-el-dialog {
-  p {
-    color: black;
-  }
-}
+// el-dialog {
+//   p {
+//     color: black;
+//   }
+// }
 
 div {
   padding: 0%;

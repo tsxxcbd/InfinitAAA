@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {ref} from 'vue'
+import {ref, reactive} from 'vue'
 import { registerAPI, loginAPI} from '@/api/user.js'
 
 const useUserInfoStore = defineStore('userInfo',()=>{
@@ -10,14 +10,11 @@ const useUserInfoStore = defineStore('userInfo',()=>{
         photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkYRMy3ifBgjxbF_p-NU1eyIpB8WZ_FQqB7YTV5SVPd8rCvVVI"
     })
 
+
     const setInfo = (newInfo)=>{
         info.value = newInfo
     }
 
-
-    const removeInfo = ()=>{
-        info.value = {}
-    }
 
     const getUserInfo = async ({account, password}) => {
         const res = await loginAPI({account, password})
@@ -28,11 +25,13 @@ const useUserInfoStore = defineStore('userInfo',()=>{
         const res = await registerAPI({account, password})
     }
 
+    const clearUserInfo = () => {
+        info.value = {}
+    }
 
 
 
-
-    return {info, getUserInfo, register}
+    return {info,getUserInfo, register,clearUserInfo}
 
 },{persist:true})
 

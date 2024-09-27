@@ -28,6 +28,8 @@ const handleLog= () => {
     ).then(async () => {
       // Perform logout actions
       router.push('/login')
+      userInfo.clearUserInfo()
+
       ElMessage({
         type: 'success',
         message: '成功退出登录',
@@ -56,10 +58,10 @@ const navigateToSearch = () => {
 
 //用户信息
 import useUserInfoStore from '../../../stores/userInfo.js'
+import { storeToRefs } from 'pinia'
 
 const userInfo = useUserInfoStore();
-const  userName = userInfo.info.name;
-const userPhoto = userInfo.info.photo
+const  {info} = storeToRefs(userInfo);
 
 
 </script>
@@ -88,8 +90,8 @@ const userPhoto = userInfo.info.photo
 
         <el-dropdown placement="bottom-end" >
           <div class="self el-dropdown-link" style="outline: none">
-            <el-image :src=userPhoto alt="photo" class="avatar " fit="cover" />
-            <p class="username">{{userName}}</p>
+            <el-image :src=info.photo alt="photo" class="avatar " fit="cover" />
+            <p class="username">{{info.name}}</p>
           </div>
           <!-- 下拉菜单 -->
           <!-- command：条目被点击触发后，在事件函数上可以声明一个参数，接收条目对应的指令 -->

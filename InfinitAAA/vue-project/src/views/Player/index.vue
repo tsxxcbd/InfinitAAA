@@ -2,9 +2,10 @@
 import { ref, onMounted, defineProps, reactive, provide, inject, watch } from 'vue'
 
 import currentsongStore from '../../stores/currentSong.js'
+import { storeToRefs } from 'pinia';
 
 const currentSong = currentsongStore();
-
+const {LRC} = storeToRefs(currentSong);
 
 
 interface LyricsLine {
@@ -19,13 +20,16 @@ const displayedLyrics = ref([] as LyricsLine[]);
 
 
 const formatLrc = () => {
-  console.log('调用formatLrc，LRC为：' + LRC.value);
+  console.log(111)
+
   if (!LRC.value) {
     displayedLyrics.value = [];
     return;
   }
   const strLrc = LRC.value.split('\n');
   const arr: { time: number; words: string }[] = [];
+  console.log(222)
+
   for (let i = 0; i < strLrc.length; i++) {
     const str = strLrc[i];
     const parts = str.split(']');
@@ -39,6 +43,7 @@ const formatLrc = () => {
     }
   }
   lrcData.value = arr;
+  console.log(lrcData.value+"555")
   updateDisplayedLyrics(0);
 };
 
@@ -83,7 +88,7 @@ const updateDisplayedLyrics = (currentTime: number) => {
 };
 
 onMounted(() => {
-  currentSong.getDetail();
+  currentSong.getLyrics();
   formatLrc();
   const audio = document.querySelector('audio');
 
@@ -104,9 +109,9 @@ onMounted(() => {
         <p class="album">专辑：{{ currentSong.songInfo.album }}</p>
       </span>
 
-      <!-- <div class="lyrics">
+       <div class="lyrics">
         <p v-for="(line, index) in displayedLyrics" :key="index">{{ line.words }}</p>
-      </div> -->
+      </div>
     </div>
 
   </div>

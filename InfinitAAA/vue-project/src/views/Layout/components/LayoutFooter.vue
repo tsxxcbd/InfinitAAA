@@ -7,12 +7,13 @@ import currentListStore from '../../../stores/currentList.js'
 import {useRouter} from 'vue-router'
 import { RTL } from 'element-plus/es/components/virtual-list/src/defaults'
 import lkSelect from '../../../views/lk-select.vue'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 
 const currentSong = currentsongStore();
 
-const songId = ref(currentSong.songId);
+const {songId, source,songInfo} = storeToRefs(currentSong);
 
 
 
@@ -82,7 +83,7 @@ const handleMousedown = () => {
 
 const getDuration = () => {
     duration.value = timeFormat(audio.value.duration)
-    audio.value.volume = volume 
+    //audio.value.volume = volume 
       //监听音量的变化
       // this.audio.addEventListener('volumechange',(value)=>{
       //   console.log(this.audio.volume)
@@ -127,12 +128,11 @@ const nextSong = () => {
 
 }
 
-const name = ref(currentSong.songInfo.songName);
 
 
 onMounted(()=>{
     currentSong.getDetail();
-   console.log(name.value);
+    currentSong.getAudio();
     console.log(audio.value)
     console.log(progress.value)
 })
@@ -223,7 +223,6 @@ const handleRowDoubleClick = (row) => {
 
 <template>
     <audio @canplay="getDuration" controls @timeupdate="updateTime" v-show="false" ref="audio" :src="currentSong.source" />
-    <!-- <player :currentTime="audio.currentTime" />  -->
 
     <el-drawer v-model="drawer" title="播放列表" :direction="RTL" size="400">
         <span>
@@ -251,7 +250,7 @@ const handleRowDoubleClick = (row) => {
     <el-footer class="bottom">
         <div class="music-player">
             <div class="song-info">
-                <p @click="$router.push('/player')">{{ currentSong.songInfo.songName + " - " + currentSong.songInfo.singer }}</p>
+                <p @click="$router.push('/player')">{{ songInfo.songName + " - " + songInfo.singer }}</p>
                 <p class="Time">{{ currentDuration + "/" + duration }}</p>
 
             </div>
@@ -271,8 +270,8 @@ const handleRowDoubleClick = (row) => {
                         @click="previousSong"></el-button>
                     <span class="play" @click="handlePauseOrPlay">
                         <el-icon size="35px" color="#F2F2F2">
-                            <video-pause v-if="!paused" />
-                            <video-play v-else="paused" />
+                            <video-pause v-if="paused" />
+                            <video-play v-else="!paused" />
                         </el-icon>
                     </span>
 

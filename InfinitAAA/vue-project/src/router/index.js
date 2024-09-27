@@ -13,7 +13,9 @@ const router = createRouter({
   routes: [
     {
         path: '/',
+        redirect: '/player',
         component: Layout,
+        
         children: [
           {
             path: 'comment',
