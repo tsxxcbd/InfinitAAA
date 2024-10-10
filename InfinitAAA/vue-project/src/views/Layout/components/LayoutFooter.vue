@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { onMounted,  ref } from 'vue'
-import { CloseBold } from '@element-plus/icons-vue'
+import { onMounted,  ref,watch } from 'vue'
+import { Delete } from '@element-plus/icons-vue'
 import { VideoPause, VideoPlay } from '@element-plus/icons-vue'
 import currentsongStore from '../../../stores/currentSong.js'
 import currentListStore from '../../../stores/currentList.js'
@@ -13,7 +13,7 @@ const router = useRouter()
 
 const currentSong = currentsongStore();
 
-const {songId, source,songInfo} = storeToRefs(currentSong);
+let {songId, source,songInfo} = storeToRefs(currentSong);
 
 
 
@@ -22,7 +22,7 @@ const duration = ref('00:00');
 const currentDuration = ref('00:00');
 const audio = ref();
 const volume = ref(1);
-const paused = ref(false);  
+const paused = ref(true);  
 const isMoveIn = ref(false);
 const progress = ref();
 const currentProgress = ref();
@@ -82,12 +82,14 @@ const handleMousedown = () => {
 
 
 const getDuration = () => {
-    duration.value = timeFormat(audio.value.duration)
-    //audio.value.volume = volume 
-      //监听音量的变化
-      // this.audio.addEventListener('volumechange',(value)=>{
-      //   console.log(this.audio.volume)
-      // })
+    duration.value = timeFormat(audio.value.duration);
+
+    audio.value.volume = volume.value;
+
+    // 监听音量的变化
+    audio.value.addEventListener('volumechange', (event) => {
+        console.log('Volume changed to: ' + event.target.volume);
+    });
 }
 
 const timeFormat = (number: string | number): string => {
@@ -121,11 +123,14 @@ const updateTime = () => {
 
 //切换歌曲相关
 const previousSong = () => {
+    currentSong.songId= 316000
+    console.log("切换到上一首")
 
 }
 
 const nextSong = () => {
-
+    currentSong.songId= 306665
+    console.log("akmskc")
 }
 
 
@@ -138,9 +143,21 @@ onMounted(()=>{
 })
 
 
+watch(songId,(songId, newsongId)=> {
+    currentSong.getDetail();
+    currentSong.getAudio();
+    paused.value = true
+    console.log(paused.value+"kkkk")
+})
+
+
+
+
 const handlePauseOrPlay = () => {
     audio.value.paused ? audio.value.play() : audio.value.pause()
     paused.value = !paused.value
+    console.log(paused.value+"kkkk")
+    
 }
 
 
@@ -229,19 +246,21 @@ const handleRowDoubleClick = (row) => {
         <p class="number">{{ listStore.currentList.length }}首歌曲</p>
         <el-table height="600px" :data="listStore.currentList" style="width: 100%" :show-header="false"
             :row-style="{ height: '100px' }" @row-dblclick="handleRowDoubleClick">
-            <el-table-column label="Details" width="360">
+            <el-table-column label="Details" width="300px">
             <template #default="{ row }">
                 <div class="song-details">
                 <div class="name-singer" width="220px">
                     <div class="name">{{ row.songName }}</div>
                     <div class="singer">{{ row.artist }}</div>
                 </div>
-                <div>
-                    <el-button type="primary" :icon="CloseBold" class="delete" background="transparent" circle
-                    @click="listStore.deleteSong(row.id)"></el-button>
-                </div>
                 </div>
             </template>
+            </el-table-column>
+            <el-table-column>
+                <template #default="{ row }">
+                    <el-button :icon="Delete" background="transparent" circle
+                    @click="listStore.deleteSong(row.id)"></el-button>
+                </template>
             </el-table-column>
         </el-table>
         </span>
@@ -270,8 +289,8 @@ const handleRowDoubleClick = (row) => {
                         @click="previousSong"></el-button>
                     <span class="play" @click="handlePauseOrPlay">
                         <el-icon size="35px" color="#F2F2F2">
-                            <video-pause v-if="paused" />
-                            <video-play v-else="!paused" />
+                            <video-pause v-if="!paused" />
+                            <video-play v-else />
                         </el-icon>
                     </span>
 
@@ -283,16 +302,17 @@ const handleRowDoubleClick = (row) => {
                     <div class="volumePanel">
                         <lk-select v-model:visible="volumeVisible">
                             <div class="progressY" ref="progressY">
-                            <div class="currentProgressY" ref="currentProgressY">
-                                <span class="circleY" ref="circleY" @mousedown="handleVolumeMousedown"></span>
+                                <div class="currentProgressY" ref="currentProgressY">
+                                    <span class="circleY" ref="circleY" @mousedown="handleVolumeMousedown"></span>
+                                </div>
                             </div>
-                            </div>
+
                             <template v-slot:reference>
                                 <el-button type="primary" circle class="iconfont icon-shengyin volume" v-if="volume"></el-button>
                                 <el-button type="primary" circle class="iconfont icon-shengyin volume" v-else></el-button>
                             </template>
                         </lk-select>
-                    </div>
+                    </div>  
 
                     <el-button type="primary" circle class="iconfont icon-sort" @click="showDrawer" />
                 </div>
@@ -405,53 +425,6 @@ const handleRowDoubleClick = (row) => {
         width: 150px;
     }
 
-
-    ::v-deep .el-drawer {
-        background: #000;
-    }
-
-    ::v-deep .el-drawer p {
-        margin-left: 10px;
-    }
-
-    .el-drawer__title {
-        margin-top: 50px;
-        margin-left: 5px;
-        font-size: 24px;
-        color: #F2F2F2;
-    }
-
-    .song-details {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-    }
-
-    /* Styles for name and singer column */
-    .name-singer {
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Apply specific styles to each part of the song details */
-    .name {
-        color: #F2F2F2;
-        font-size: 18px;
-    }
-
-    .singer {
-        margin-top: 20px;
-        font-size: 16px;
-        color: #AAAAAA;
-    }
-
-    .long {
-        font-size: 18px;
-        color: #AAAAAA;
-        /* Change color of long to differentiate */
-    }
-
     .progress,
     .progressY {
         height: 2px;
@@ -553,6 +526,37 @@ const handleRowDoubleClick = (row) => {
         }
     }
 
+
+
+}
+
+
+.el-drawer {
+    
+
+    .song-details {
+        display: flex;
+     flex-direction:    row;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+    }
+
+    .name-singer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .name {
+        color: #F2F2F2;
+        font-size: 18px;
+    }
+
+    .singer {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #AAAAAA;
+    }
 }
 
 

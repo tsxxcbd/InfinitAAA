@@ -29,7 +29,7 @@ const currentsongStore = defineStore('currentsongInfo',()=>{
     
             const data = await response.json();
     
-            console.log(data)
+            //console.log(data)
     
             const song = data.songs[0]; // API返回的数据结构中包含了歌曲详情信息
     
@@ -43,7 +43,7 @@ const currentsongStore = defineStore('currentsongInfo',()=>{
     }
 
     const getAudio = async () => {
-      const apiUrl = ref(`http://localhost:3000/song/url/v1?id=${songId.value}&level=exhigh`);
+      const apiUrl = ref(`http://localhost:3000/song/url/v1?id=${songId.value}&level=standard`);
       try {
         const response = await fetch(apiUrl.value, {
           headers: {
@@ -56,7 +56,7 @@ const currentsongStore = defineStore('currentsongInfo',()=>{
         }
 
         const data = await response.json();
-        console.log(data)
+       //console.log(data)
         source.value = data.data[0].url ? data.data[0].url : ``;
 
       } catch (error) {
@@ -146,6 +146,6 @@ const currentsongStore = defineStore('currentsongInfo',()=>{
         getLyrics
     }
 
-},{persist:true})
+})
 
 export default currentsongStore;

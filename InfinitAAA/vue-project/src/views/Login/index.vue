@@ -2,16 +2,15 @@
 import { User, Lock } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
- 
 
-//控制注册与登录表单的显示， 默认显示注册
+
 const isRegister = ref(false)
 
 //准备表单对象
 const form = ref({
-    account:'',
-    password:'',
-    rePassword:''
+    account: '',
+    password: '',
+    rePassword: ''
 })
 
 //校验密码的函数
@@ -27,25 +26,23 @@ const checkRePassword = (rule, value, callback) => {
 
 //表单校验规则
 const rules = {
-    account:[
-        { required: true, message: '请输入用户名', trigger: 'blur'},
-        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur'}
+    account: [
+        { required: true, message: '请输入用户名', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
     ],
-    password:[
-        { required: true, message: '请输入密码', trigger: 'blur'},
-        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur'}
+    password: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 5, max: 16, message: '长度为5~16位非空字符', trigger: 'blur' }
     ],
-    rePassword:[
-        {validator:checkRePassword,trigger:'blur'}
+    rePassword: [
+        { validator: checkRePassword, trigger: 'blur' }
     ]
 }
 
 
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
 import useUserInfoStore from '../../stores/userInfo';
-
 const userStore = useUserInfoStore();
-
 
 //获取form实例做统一校验
 const formRef = ref(null)
@@ -55,36 +52,36 @@ const router = useRouter()
 const doRegister = () => {
     const { account, password, rePassword } = form.value;
     //调用实例方法
-    formRef.value.validate(async (valid)=>{
+    formRef.value.validate(async (valid) => {
 
         //以valid作为判断条件，通过校验实现登录逻辑
-        if(valid) {
-            await userStore.register({account, password})
-            ElMessage({type: 'success', message:'注册成功'})
+        if (valid) {
+            await userStore.register({ name: account, password: password })
+            ElMessage({ type: 'success', message: '注册成功' })
+            isRegister.value = false
         }
-    //注册后清空form的数据
-        form.value={
-            account:'',
-            password:'',
-            rePassword:''
-        }   
+        //注册后清空form的数据
+        form.value = {
+            account: '',
+            password: '',
+            rePassword: ''
+        }
     })
 }
 
 
 const doLogin = () => {
-    const {account, password} = form.value
+    const { account, password } = form.value
     //调用实例方法
-    formRef.value.validate(async (valid)=>{
-
+    formRef.value.validate(async (valid) => {
         //以valid作为判断条件，通过校验实现登录逻辑
-        if(valid) {
+        if (valid) {
             //TODO
-            await userStore.getUserInfo({account, password})
+            await userStore.login({ name: account, password: password })
             //1. 提示用户
-            ElMessage({type: 'success', message:'登录成功'})
+            ElMessage({ type: 'success', message: '登录成功' })
             //2. 跳转首页
-            router.replace({path: '/'})
+            router.replace({ path: '/' })
         }
     })
 }
@@ -93,10 +90,11 @@ const doLogin = () => {
 
 <template>
     <div class="login-layout">
-        <el-row class="login-page"  align="middle">
+        <el-row class="login-page" align="middle">
             <el-col :span="12" :offset="6" class="form">
                 <!-- 注册表单 -->
-                <el-form ref="formRef" size="large" autocomplete="off" v-if="isRegister" :model="form" :rules="rules" label-position="top" label-width="100px">
+                <el-form ref="formRef" size="large" autocomplete="off" v-if="isRegister" :model="form" :rules="rules"
+                    label-position="top" label-width="100px">
                     <el-form-item>
                         <h1>注册</h1>
                     </el-form-item>
@@ -104,25 +102,28 @@ const doLogin = () => {
                         <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="form.account"></el-input>
                     </el-form-item>
                     <el-form-item prop="password" label="密码" class="item">
-                        <el-input :prefix-icon="Lock" type="password" placeholder="请输入密码" v-model="form.password"></el-input>
+                        <el-input :prefix-icon="Lock" type="password" placeholder="请输入密码"
+                            v-model="form.password"></el-input>
                     </el-form-item>
                     <el-form-item prop="rePassword" label="再次确认密码">
-                        <el-input :prefix-icon="Lock" type="password" placeholder="请输入再次密码" v-model="form.rePassword"></el-input>
+                        <el-input :prefix-icon="Lock" type="password" placeholder="请输入再次密码"
+                            v-model="form.rePassword"></el-input>
                     </el-form-item>
                     <!-- 注册按钮 -->
                     <el-form-item>
-                        <el-button class="button" type="primary" auto-insert-space @click="doRegister" >
+                        <el-button class="button" type="primary" auto-insert-space @click="doRegister">
                             注册
                         </el-button>
                     </el-form-item>
                     <el-form-item class="flex">
-                        <el-link type="info" :underline="false" @click="isRegister = false;clearRegisterData()">
+                        <el-link type="info" :underline="false" @click="isRegister = false; clearRegisterData()">
                             ← 返回
                         </el-link>
                     </el-form-item>
                 </el-form>
                 <!-- 登录表单 -->
-                <el-form ref="formRef"  size="large" autocomplete="off" v-else :model="form" label-position="top" label-width="100px" :rules="rules">
+                <el-form ref="formRef" size="large" autocomplete="off" v-else :model="form" label-position="top"
+                    label-width="100px" :rules="rules">
                     <el-form-item>
                         <h1>登录到 InfiniteMusic</h1>
                     </el-form-item>
@@ -130,7 +131,8 @@ const doLogin = () => {
                         <el-input :prefix-icon="User" placeholder="请输入用户名" v-model="form.account"></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="password" class="item">
-                        <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码" v-model="form.password"></el-input>
+                        <el-input name="password" :prefix-icon="Lock" type="password" placeholder="请输入密码"
+                            v-model="form.password"></el-input>
                     </el-form-item>
                     <el-form-item class="flex">
                         <div class="flex">
@@ -143,14 +145,14 @@ const doLogin = () => {
                         <el-button class="button" type="primary" auto-insert-space @click="doLogin">登录</el-button>
                     </el-form-item>
                     <el-form-item class="flex">
-                        <el-link type="info" :underline="false" @click="isRegister = true" >
+                        <el-link type="info" :underline="false" @click="isRegister = true">
                             注册 →
                         </el-link>
                     </el-form-item>
                 </el-form>
             </el-col>
         </el-row>
-        
+
 
     </div>
 
@@ -175,7 +177,7 @@ const doLogin = () => {
     top: 50px;
     left: 50%;
     transform: translate(-50%, 0);
-   
+
     .form {
         display: flex;
         flex-direction: column;
@@ -193,7 +195,7 @@ const doLogin = () => {
             margin-top: 50px;
             border-radius: 40px;
             font-size: 20px;
-            font-weight: 700; 
+            font-weight: 700;
             color: black;
         }
 
@@ -209,14 +211,13 @@ const doLogin = () => {
         }
     }
 }
-
 </style>
 
 <style>
- .item .el-form-item__label{
-    color:#fff;
+.item .el-form-item__label {
+    color: #fff;
     font-weight: 700;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size:18px  
-  }
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px
+}
 </style>

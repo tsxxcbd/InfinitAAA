@@ -1,136 +1,31 @@
 <script lang="ts" setup>
-import { VueElement, ref } from 'vue'
-import type { TabsPaneContext } from 'element-plus'
-
-
+import { onMounted, ref } from 'vue'
 
 const hhhName = ref('third')
 const likeName = ref('third1')
 import {
-  Delete, RefreshRight, Plus
+  Delete, Plus
 } from '@element-plus/icons-vue'
 
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
-}
 
-const handleClick1 = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
-}
+const currentlistid = ref(0);
+const currentsongid = ref(0);
+const addcurrentsongid = ref(0)
 
+const AdddialogVisible = ref(false)
+const DeleteCreatedialogVisible = ref(false)
+const DeletedialogVisible = ref(false)
+const addSongTolistdialogVisible = ref(false)
 
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-
-
-
-
-
-let LikeSongData = [];
-let LikeListsData = [];
-let CreateListsData = [];
-let User = { id: "10" };
-let DeleteCreatedialogVisible = ref(false);
-let DeletedialogVisible = ref(false);
-let AdddialogVisible = ref(false)
-let currentlistid = "";
-let addcurrentsongid = "";
-let addcurrentlistid = "";
-let addSongTolistdialogVisible = ref(false);
-import { reactive } from 'vue'
 import type { FormProps } from 'element-plus'
+
 
 const labelPosition = ref<FormProps['labelPosition']>('right')
 
-const formLabelAlign = reactive({
-  name: '',
-  profile: '',
-})
-
-
-import {
-  queryUserLikeLists, queryUserCreateLists,
-  queryUserLikeSong, deleteLikeList,
-  deleteCreateList, addCreateList,
-  addSongIntoList
-} from '../../api/playlist.js'
-
-const query = async () => {
-  try {
-
-    LikeListsData = await queryUserLikeLists(User.id)
-    CreateListsData = await queryUserCreateLists(User.id);
-    LikeSongData = await queryUserLikeSong(User.id);
-
-  } catch (e) {
-    alert("获取数据失败" + e.message)
-  }
-}
-
-const deletelikeButton = async () => {
-
-  try {
-
-    console.log(currentlistid);
-
-    deleteLikeList(currentlistid);
-    query();
-    DeletedialogVisible = ref(false)
-
-  } catch (e) {
-    alert("获取数据失败" + e.message)
-  }
-
-}
-
-const deletecreateButton = async () => {
-  try {
-    console.log(currentlistid);
-
-    deleteCreateList(currentlistid);
-    query();
-    DeleteCreatedialogVisible = ref(false)
-
-  } catch (e) {
-    alert("获取数据失败" + e.message)
-  }
-
-}
-
-const addcreateButton = async () => {
-  try {
-
-    addCreateList(formLabelAlign.name, formLabelAlign.profile, User.id)
-    query();
-    AdddialogVisible = ref(false)
-
-  } catch (e) {
-    alert("获取数据失败" + e.message)
-  }
-
-}
-
-const addSongToList = async () => {
-  try {
-    console.log(addcurrentsongid);
-    console.log(addcurrentlistid);
-
-    addSongIntoList(addcurrentsongid, addcurrentlistid);
-    query();
-    addSongTolistdialogVisible = ref(false)
-
-  } catch (e) {
-    alert("获取数据失败" + e.message)
-  }
-
-}
-
-
-
-
-
+const formLabelAlign = ref({
+  name:"",
+  profile: ""
+}) 
 
 //上部用户信息
 import useUserInfoStore from '../../stores/userInfo.js'
@@ -138,6 +33,18 @@ import useUserInfoStore from '../../stores/userInfo.js'
 const userInfo = useUserInfoStore();
 
 
+import useListStore from '../../stores/playList.js'
+
+const listStore = useListStore()
+
+onMounted(()=>{
+  //listStore.getLikeSongs()
+
+  //listStore.getLikeList()
+  //listStore.getCreateList()
+})
+
+const likeSongs = ref([])
 
 </script>
 
@@ -147,16 +54,15 @@ const userInfo = useUserInfoStore();
     <div class="user2">
       <el-image style="width: 120px; height: 120px" :src="userInfo.info.photo" class="avatar2" />
       <h4 class="username2">{{ userInfo.info.name }}</h4>
-      <el-button class="refresh" :icon="RefreshRight" circle @click="query()"></el-button>
       <el-button class="refresh" :icon="Plus" circle @click="AdddialogVisible = true"></el-button>
     </div>
 
     <div class="person-pages">
-      <el-tabs v-model="hhhName" class="my-tabs" @tab-click="handleClick">
-        <el-tab-pane label="我喜欢" name="first">
-          <el-tabs v-model="likeName" class="like-tabs" @tab-click="handleClick1">
-            <el-tab-pane label="歌曲" class="table-wrapper" name="first1">
-              <el-table :data="LikeSongData" height="350" class="songs" :header-cell-style="{
+      <el-tabs v-model="hhhName" class="my-tabs" >
+      <el-tab-pane label="我喜欢" name="first">
+          <el-tabs v-model="likeName" class="like-tabs">
+            <!-- <el-tab-pane label="歌曲" class="table-wrapper" name="first1">
+              <el-table :data="likeSongs" height="350" class="songs" :header-cell-style="{
                 background: 'transparent',
                 height: '45px', border: 'none'
               }">
@@ -165,15 +71,15 @@ const userInfo = useUserInfoStore();
                 <el-table-column prop="album" label="专辑" width="300px" />
                 <el-table-column label="操作" width="300px">
                   <template v-slot="scope">
-                    <el-button :icon="Plus" class="delete" background='transparent' circle
-                      @click="addSongTolistdialogVisible = true, addcurrentsongid = scope.row.songid" />
+                       <el-button :icon="Plus" class="delete" background='transparent' circle
+                      @click="addSongTolistdialogVisible = true, addcurrentsongid = scope.row.songid" /> 
                   </template>
                 </el-table-column>
               </el-table>
 
-            </el-tab-pane>
-            <el-tab-pane class="table-wrapper" label="歌单" name="third1">
-              <el-table :data=LikeListsData height="350" class="songs" :header-cell-style="{
+            </el-tab-pane> -->
+            <!-- <el-tab-pane label="歌单" class="table-wrapper"  name="third1">
+              <el-table :data=listStore.likeList height="350" class="songs" :header-cell-style="{
                 background: 'transparent',
                 height: '45px', border: 'none'
               }">
@@ -183,15 +89,17 @@ const userInfo = useUserInfoStore();
                 <el-table-column label="操作" width="250px">
                   <template v-slot="scope">
                     <el-button :icon="Delete" class="delete" background='transparent' circle
-                      @click="DeletedialogVisible = true, currentlistid = scope.row.id" />
+                      @click="DeletedialogVisible = true" />
+                      <el-button :icon="Delete" class="delete" background='transparent' circle
+                      @click="DeletedialogVisible = true, currentsongid = scope.row.id" />
                   </template>
                 </el-table-column>
               </el-table>
-            </el-tab-pane>
+            </el-tab-pane> -->
           </el-tabs>
         </el-tab-pane>
-        <el-tab-pane label="我的歌单" name="second" class="table-wrapper">
-          <el-table :data="CreateListsData" height="400px" class="songs" :header-cell-style="{
+       <el-tab-pane label="我的歌单" name="second" class="table-wrapper">
+          <el-table :data="listStore.createList" height="400px" class="songs" :header-cell-style="{
             background: 'transparent',
             height: '45px', border: 'none'
           }">
@@ -201,21 +109,10 @@ const userInfo = useUserInfoStore();
             <el-table-column label="删除" width="250px">
               <template v-slot="scope">
                 <el-button :icon="Delete" class="delete" background="transparent" circle
-                  @click="DeleteCreatedialogVisible = true, currentlistid = scope.row.id, query()" />
+                  @click="DeleteCreatedialogVisible = true,currentlistid=scope.row.id" />
               </template>
             </el-table-column>
           </el-table>
-          <!-- <el-table :data="CreateListsData1" height="450"  class="songs" :header-cell-style="{ background:'transparent',
-                                    height:'45px',color:'#000000',border:'none'}">
-                                        <el-table-column prop="name" label="歌单名" width="300px" />
-                                        <el-table-column prop="number" label="歌曲数目" width="250px" />
-                                        <el-table-column prop="profile" label="歌曲简介" width="600px" />
-                                        <el-table-column label="删除" width="250px">
-                                        <template v-slot="scope">
-                                        <el-button :icon="Delete" class="delete" background="transparent" circle @click="DeleteCreatedialogVisible = true,currentlistid=scope.row.id,query()"/>
-                                        </template>
-                                        </el-table-column>        
-                    </el-table> -->
         </el-tab-pane>
         <el-tab-pane label="音乐画像" name="third">
           <el-carousel :interval="4000" type="card" height="400px" class="userIn">
@@ -263,27 +160,28 @@ const userInfo = useUserInfoStore();
 
   </div>
 
-  <el-dialog v-model="DeletedialogVisible" title="是否要取消收藏该歌单" width="40%">
+  <!-- <el-dialog v-model="DeletedialogVisible" title="是否要取消收藏该歌单" width="40%">
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="DeletedialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="DeletedialogVisible = false, deletelikeButton(), query()">
+        <el-button type="primary" @click="DeletedialogVisible = false, deletelikeButton()">
           确定
         </el-button>
       </span>
     </template>
-  </el-dialog>
-  <el-dialog v-model="DeleteCreatedialogVisible" title="是否要删除该歌单" width="40%">
+  </el-dialog> -->
+
+   <!-- <el-dialog v-model="DeleteCreatedialogVisible" title="是否要删除该歌单" width="40%">
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="DeleteCreatedialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="DeleteCreatedialogVisible = false, deletecreateButton(), query()">
+        <el-button type="primary" @click="DeleteCreatedialogVisible = false, listStore.delCreateList(currentlistid)">
           确定
         </el-button>
       </span>
     </template>
-  </el-dialog>
-  <el-dialog v-model="AdddialogVisible" title="创建歌单" width="30%">
+  </el-dialog> -->
+   <el-dialog v-model="AdddialogVisible" title="创建歌单" width="30%">
     <span>
       <el-form :label-position="labelPosition" label-width="100px" :model="formLabelAlign" style="max-width: 460px">
         <el-form-item label="歌单名">
@@ -298,23 +196,23 @@ const userInfo = useUserInfoStore();
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="AdddialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="addcreateButton(), AdddialogVisible = false, query()">
+        <el-button type="primary" @click="listStore.addCreateList({name:formLabelAlign.name,profile:formLabelAlign.profile,userid:userInfo.info.id}), AdddialogVisible = false">
           确定
         </el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog> 
 
-  <el-dialog v-model="addSongTolistdialogVisible" title="添加该歌曲到歌单" width="30%">
+  <!-- <el-dialog v-model="addSongTolistdialogVisible" title="添加该歌曲到歌单" width="30%">
     <span>
       <el-form :label-position="labelPosition" label-width="100px" :model="CreateListsData" style="max-width: 460px">
         <el-form-item label="要添加的歌单">
           <el-select v-model="addcurrentlistid" clearable placeholder="请选择">
-            <!-- <el-option 
+            <el-option 
                 v-for= "item in CreateListsData"
                 :key = "item.id"
                 :label= "item.name"
-                :value= "item.id"/> -->
+                :value= "item.id"/>
           </el-select>
         </el-form-item>
       </el-form>
@@ -322,12 +220,12 @@ const userInfo = useUserInfoStore();
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="addSongTolistdialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="addSongToList(), addSongTolistdialogVisible = false, query()">
+        <el-button type="primary" @click="addSongToList(), addSongTolistdialogVisible = false">
           确定
         </el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog>   -->
 
 </template>
 

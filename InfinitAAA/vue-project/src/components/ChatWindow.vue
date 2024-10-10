@@ -125,16 +125,13 @@ export default {
     <el-form @submit.prevent.native="sendMessage" class="input-form">
       <el-row :gutter="30" align="middle" class="form-row">
         <el-col :span="14">
-          <el-input v-model="inputText" placeholder="输入消息" class="inputText"></el-input>
+          <el-input  v-model="inputText" placeholder="输入消息" class="inputText" ></el-input>
         </el-col>
         <el-col :span="10">
           <el-button type="primary" @click="handleSend">发送</el-button>
           <el-button @click="sendDataToParent, addSongTolistdialogVisible = true" type="primary" round
             class="addToCurrent">+</el-button>
         </el-col>
-        <!-- <el-col :span="6"> -->
-        <!-- <el-button type="primary" @click="langchainchat">对话</el-button> -->
-        <!-- </el-col> -->
       </el-row>
     </el-form>
   </div>
@@ -161,7 +158,7 @@ export default {
 
 
 
-<style scoped>
+<style lang="less" scoped>
 .addToCurrent {
   background-color: transparent;
   border: none;
@@ -214,6 +211,10 @@ export default {
 
 .inputText {
   font-size: 16px;
+  border-color: #fff;
+}
+.el-input {
+  --el-input-border-color:#ffffff6d;
 }
 
 

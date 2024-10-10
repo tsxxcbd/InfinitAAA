@@ -1,28 +1,27 @@
-import {defineStore} from 'pinia'
-import {ref, reactive} from 'vue'
-import { registerAPI, loginAPI} from '@/api/user.js'
+import { defineStore } from 'pinia'
+import { ref, reactive } from 'vue'
+import { registerAPI, loginAPI } from '@/api/user.js'
 
-const useUserInfoStore = defineStore('userInfo',()=>{
+const useUserInfoStore = defineStore('userInfo', () => {
     //定义状态相关的内容
 
     const info = ref({
-        name: 'orange',
+        id: 0,
+        name: '亲爱的用户',
+        token:'',
         photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkYRMy3ifBgjxbF_p-NU1eyIpB8WZ_FQqB7YTV5SVPd8rCvVVI"
     })
 
 
-    const setInfo = (newInfo)=>{
-        info.value = newInfo
+    const login = async (data) => {
+        const res = await loginAPI(data)
+        info.value.id = res.data.id,
+        info.value.name = res.data.name,
+        info.value.token = res.data.token
     }
 
-
-    const getUserInfo = async ({account, password}) => {
-        const res = await loginAPI({account, password})
-        info.value = res.result
-    }
-
-    const register = async ({account, password}) => {
-        const res = await registerAPI({account, password})
+    const register = async (data) => {
+        const res = await registerAPI(data)
     }
 
     const clearUserInfo = () => {
@@ -31,8 +30,8 @@ const useUserInfoStore = defineStore('userInfo',()=>{
 
 
 
-    return {info,getUserInfo, register,clearUserInfo}
+    return { info, login, register, clearUserInfo }
 
-},{persist:true})
+}, { persist: true })
 
 export default useUserInfoStore;

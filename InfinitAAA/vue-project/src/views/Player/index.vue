@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref, onMounted, defineProps, reactive, provide, inject, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 import currentsongStore from '../../stores/currentSong.js'
 import { storeToRefs } from 'pinia';
 
 const currentSong = currentsongStore();
-const {LRC} = storeToRefs(currentSong);
+let {songId} = storeToRefs(currentSong);
 
 
 interface LyricsLine {
@@ -13,22 +13,20 @@ interface LyricsLine {
   words: string;
 }
 
-
 const lrcData = ref([] as { time: number; words: string }[]);
 const contextLines = ref(11);
 const displayedLyrics = ref([] as LyricsLine[]);
 
 
 const formatLrc = () => {
-  console.log(111)
-
-  if (!LRC.value) {
+  const LRC = currentSong.LRC
+  console.log(LRC+"ppp")
+  if (!LRC) {
     displayedLyrics.value = [];
     return;
   }
-  const strLrc = LRC.value.split('\n');
+  const strLrc = LRC.split('\n');
   const arr: { time: number; words: string }[] = [];
-  console.log(222)
 
   for (let i = 0; i < strLrc.length; i++) {
     const str = strLrc[i];
@@ -43,7 +41,6 @@ const formatLrc = () => {
     }
   }
   lrcData.value = arr;
-  console.log(lrcData.value+"555")
   updateDisplayedLyrics(0);
 };
 
@@ -87,8 +84,9 @@ const updateDisplayedLyrics = (currentTime: number) => {
   }
 };
 
-onMounted(() => {
-  currentSong.getLyrics();
+onMounted(async() => {
+  await currentSong.getLyrics();
+  
   formatLrc();
   const audio = document.querySelector('audio');
 
@@ -96,6 +94,16 @@ onMounted(() => {
     audio.addEventListener('timeupdate', audioTime);
   }
 });
+
+watch(songId, async(songId, newsongId)=>{
+  await currentSong.getLyrics()//确保在getLyrics完全执行完毕后再执行formatLrc方法。
+  formatLrc();
+  const audio = document.querySelector('audio');
+
+  if (audio) {
+    audio.addEventListener('timeupdate', audioTime);
+  }
+})
 
 </script>
 

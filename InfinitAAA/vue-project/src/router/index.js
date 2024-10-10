@@ -6,6 +6,8 @@ import Layout from '@/views/Layout/index.vue'
 import Comment from '@/views/Comment/index.vue'
 import Player from '@/views/Player/index.vue'
 import Person from '@/views/Person/index.vue'
+import Home from '@/views/Home/index.vue'
+import Search from '@/views/Search/index.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,7 +15,7 @@ const router = createRouter({
   routes: [
     {
         path: '/',
-        redirect: '/player',
+        redirect: '/home',
         component: Layout,
         
         children: [
@@ -26,8 +28,16 @@ const router = createRouter({
             component: Player
           },
           {
+            path: 'home',
+            component: Home
+          },
+          {
             path: 'person',
             component: Person
+          },
+          {
+            path: 'search',
+            component: Search
           }
         ]
     },

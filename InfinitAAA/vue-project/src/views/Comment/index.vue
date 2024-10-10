@@ -1,18 +1,18 @@
 <script setup lang="ts">
     import { onMounted, ref } from 'vue'
+    import { storeToRefs } from 'pinia'
     import currentsongStore from '../../stores/currentSong.js'
+    import { watch } from 'vue';
 
     const currentSong = currentsongStore();
 
-    const songId = currentSong.songId;
-
-    const url = currentSong.songInfo.albumCover;
+    const {songId} = storeToRefs(currentSong);
 
     const commentData = ref([]);
 
     async function fetchCommentInfo() {
-        console.log(songId+"aaaa")
-        const commentUrl = `http://localhost:3000/comment/music?id=${songId}&limit=1`; // 替换为实际的评论API地址
+        const songId = currentSong.songId
+        const commentUrl = `http://localhost:3000/comment/hot?id=${songId}&type=0`; // 替换为实际的评论API地址
         try {
             const response = await fetch(commentUrl, {
                 headers: {
@@ -47,18 +47,22 @@
         await fetchCommentInfo();
     });
 
+    watch(songId,(songId,newsongId)=> {
+        fetchCommentInfo()
+    })
+
 </script>
 
 
 <template>
     <div class="comment-box">
         <div class="albumInfo">
-            <el-image style="width: 150px; height: 150px" :src="url" fit="cover" />
+            <el-image style="width: 150px; height: 150px" :src=currentSong.songInfo.albumCover fit="cover" />
             <p>{{ currentSong.songInfo.songName }}</p>
 
         </div>
         <div class="comment-table">
-            <el-table  :data="commentData"  :show-header="false" style="width: 1300px ;margin: 0 auto;margin-top: 30px;"
+            <el-table  :data="commentData"  :show-header="false" style="height:400px; width: 1300px ;margin: 0 auto;margin-top: 30px;"
             :row-style="{ height: '125px' }">
             <el-table-column label="commentDetails">
                 <template #default="{ row }">
@@ -111,6 +115,7 @@
         margin: 0 auto;
         display: flex;
         justify-items: center;
+        height: 200px;
     }
 
     .comment-details {

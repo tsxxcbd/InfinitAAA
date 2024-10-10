@@ -3,8 +3,8 @@
       <div ref="reference" @click="showPopper" >
         <slot name="reference"/>
       </div>
-      <div ref="Popper" class="Popper" v-show="visible">
-        <slot/>
+      <div ref="Popper" class="Popper" v-show="props.visible" >
+        <slot />
       </div>
     </div>
   </template>
@@ -14,21 +14,21 @@
   
   const emits = defineEmits(['update:visible'])
   const props = defineProps({
-    visible: [Boolean, String]
+    visible: Boolean
   })
   const reference = ref()
   const Popper = ref()
   
   watch(() => props.visible, ( newValue ) => {
     if (newValue) {
-      nextTick(() => {
-        const { left, top, height} = reference.value.getBoundingClientRect()
-        Popper.value.style.left = left +  'px'
-        Popper.value.style.top = top + height + 'px'
-      })
-      window.addEventListener('mousedown',docClick)
+      // nextTick(() => {
+      //   const { left, top, height} = reference.value.getBoundingClientRect()
+      //   Popper.value.style.left = left +  'px'
+      //   Popper.value.style.top = top + height + 'px'
+      // })
+      // window.addEventListener('mousedown',docClick)
     }else {
-      window.removeEventListener('mousedown',docClick)
+     // window.removeEventListener('mousedown',docClick)
     }
   })
   
@@ -41,7 +41,9 @@
   }
   
   function showPopper() {
+    //console.log("oooo")
     emits('update:visible', !props.visible)
+    //console.log(props.visible+"iiiii")
   }
   onUnmounted(()=>{
     emits('update:visible', false)
@@ -57,8 +59,8 @@
   }
   
   .Popper {
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: 30px;
     left: 0;
     background: #fff;
     box-shadow: 0 2px 12px 0px rgba(0, 0, 0, 0.1);

@@ -2,28 +2,24 @@
 import request from '@/utils/request.js'
 
 //注册接口
-export const registerAPI = ({account, password})=>{
+export const registerAPI = (data)=>{
     return request({
         url:'/api/user/register',
         method: 'POST',
-        data: {
-            account,
-            password
-        }
+        data
     })
 }
 
 //登录接口
-export const loginAPI = ({account, password}) => {
+export const loginAPI = (data) => {
     return request({
         url:'/api/user/login',
         method: 'POST',
-        data: {
-            account,
-            password
-        }
+        data
     })
 }
+
+
 
 
 

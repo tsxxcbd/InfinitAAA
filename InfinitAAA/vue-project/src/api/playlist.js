@@ -19,13 +19,7 @@ export const deleteLikeList = (currentlistid) => {
     return request.delete("/api/PlayList/deletelikelist?id=" + currentlistid)
 }
 
-export const deleteCreateList = (currentlistid) => {
-    return request.delete("/api/PlayList/deletelist?id=" + currentlistid)
-}
 
-export const addCreateList = (name, profile, userid) => {
-    return request.post("/api/PlayList/newlist?name=" + name + "&profile=" + profile + "&userid=" + userid)
-}
 
 export const addSongIntoList = (addcurrentsongid, addcurrentlistid) => {
     return request.post("/api/PlayList/addonesong?PlayListId=" + addcurrentlistid + "&songId=" + addcurrentsongid)
@@ -40,3 +34,49 @@ export const getSongList = (playlistid) => {
     return request.get("/api/PlayList/List/" + playlistid)
 }
 
+export const getLikeSongsAPI = (id) => {
+    return request({
+        url:'/api/PlayList/UserlikedSong',
+        method: 'GET',
+        params: {
+            userid: id
+        }
+    })
+}
+export const getLikeListAPI = (id) => {
+    return request({
+        url:'/api/PlayList/UselistsrLike',
+        method: 'GET',
+        params: {
+            userid: id
+        }
+    })
+}
+export const getCreateListAPI = (id) => {
+    return request({
+        url:'/api/PlayList/UserCreatelists',
+        method: 'GET',
+        params: {
+            userid: id
+        }
+    })
+}
+
+
+export const deleteCreateListAPI = (id) => {
+    return request({
+        url:'/api/PlayList/deletelist',
+        method: 'DELETE',
+        params: {
+            id: id
+        }
+    })
+}
+
+export const addCreateListAPI = (data) => {
+    return request({
+        url:'/api/PlayList/newlist',
+        method: 'POST',
+        data
+    })
+}

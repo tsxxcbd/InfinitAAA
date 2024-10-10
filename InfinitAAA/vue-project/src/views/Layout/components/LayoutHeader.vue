@@ -71,45 +71,47 @@ const  {info} = storeToRefs(userInfo);
 <template>
       <el-header class="top">
         <div class="w">
-          <div class="title" width="290px">
-          <img src="../../../assets/logo.png" class="logo">
-          <h3 class="logoname">InfiniteMusic</h3>
-        </div>
-        <div class="search-box">
-          <input class="search-txt" type='text' id='inp' v-model="keyword" placeholder="搜索音乐" />
-            <el-button type="primary" round class="search iconfont icon-sousuo"
-            @click="navigateToSearch">
-          </el-button>
-        </div>
-        <div class="chatSearch" width="150px">
-          <el-button type="primary" round :icon="Avatar" class="assistant" @click="dialogVisible = true">
-            Assistant
-          </el-button>
-        </div>
-
-
-        <el-dropdown placement="bottom-end" >
-          <div class="self el-dropdown-link" style="outline: none">
-            <el-image :src=info.photo alt="photo" class="avatar " fit="cover" />
-            <p class="username">{{info.name}}</p>
+          <div class="title" width="290px" @click="$router.push('/home')">
+            <img src="../../../assets/logo.png" class="logo" id="fff">
+            <h3 class="logoname">InfiniteMusic</h3>
           </div>
-          <!-- 下拉菜单 -->
-          <!-- command：条目被点击触发后，在事件函数上可以声明一个参数，接收条目对应的指令 -->
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item  @click="$router.push('/person')">个人主页</el-dropdown-item>
-              <el-dropdown-item @click="$router.push('/login')">退出登录</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+
+          <div class="search-box">
+            <input class="search-txt" type='text' id='inp' v-model="keyword" placeholder="搜索音乐" />
+              <el-button type="primary" round class="search iconfont icon-sousuo"
+              @click="navigateToSearch">
+            </el-button>
+          </div>
+
+          <div class="chatSearch" width="150px">
+            <el-button type="primary" round :icon="Avatar" class="assistant" @click="dialogVisible = true">
+              Assistant
+            </el-button>
+          </div>
+
+          <el-dropdown v-if="userInfo.info.token" placement="bottom-end" >
+            <div class="self el-dropdown-link" style="outline: none">
+              <el-image :src=info.photo alt="photo" class="avatar " fit="cover" />
+              <p class="username">{{info.name}}</p>
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item  @click="$router.push('/person')">个人主页</el-dropdown-item>
+                <el-dropdown-item @click="$router.push('/login')">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-dropdown v-else placement="bottom-end" >
+            <div class="self el-dropdown-link" style="outline: none">
+              <el-image alt="photo" class="avatar " fit="cover" />
+              <a @click="$router.push('/login')" style="margin-left: 30px">请先登录</a>
+            </div>
+          </el-dropdown>
 
         </div>
       </el-header>
               <!-- 音乐对话功能 -->
               <el-dialog v-model="dialogVisible" width="40%" class="chatWindow" title="音乐对话">
-          <!-- <div slot="title" class="custom-box-title">
-                音乐对话
-            </div> -->
           <span>
             <ChatWindow />
           </span>
